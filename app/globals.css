@@ -30,6 +30,24 @@ body {
       h1 {
             @apply text-3xl font-semibold;
       }
+
+      button {
+            @apply my-1 rounded-md p-2 px-5 hover:bg-gray-500/30 active:bg-gray-800/50;
+      }
+
+      table {
+            thead {
+                  @apply border-b-2 border-white text-2xl font-bold;
+            }
+
+            tr {
+                  @apply my-2 border-b border-gray-500/50;
+            }
+
+            td {
+                  @apply text-center;
+            }
+      }
 }
 
 @layer utilities {
