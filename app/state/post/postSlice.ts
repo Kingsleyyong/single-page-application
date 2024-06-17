@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-interface PostsType {
+export interface PostsType {
       id: number
       userId: number
       title: string
@@ -10,8 +10,9 @@ interface PostsType {
 export const fetchProjects = createAsyncThunk<PostsType[], number | undefined>(
       'posts/fetchProjects',
       async (limit?: number) => {
+            console.log('running')
             const response = await fetch(
-                  `${process.env.API_ENDPOINT}/posts${limit ? `?_limit=${limit}` : ''}`
+                  `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts${limit ? `?_limit=${limit}` : ''}`
             )
             return (await response.json()) as PostsType[]
       }
