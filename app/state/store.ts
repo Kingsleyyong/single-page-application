@@ -1,11 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { postsReducer } from './post/postSlice'
-import { tableDataReducer, tableHeaderReducer } from './table/tablesSlice'
+import { tableDataReducer } from './table/tableSlice'
 
 export const store = configureStore({
       reducer: {
             posts: postsReducer,
-            tableHeader: tableHeaderReducer,
             tableData: tableDataReducer,
       },
 })

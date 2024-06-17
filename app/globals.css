@@ -32,7 +32,7 @@ body {
       }
 
       button {
-            @apply my-1 rounded-md p-2 px-5 hover:bg-gray-500/30 active:bg-gray-800/50;
+            @apply my-1 select-none rounded-md p-2 px-5 hover:bg-gray-500/30 active:bg-gray-800/50;
       }
 
       table {
@@ -46,6 +46,12 @@ body {
 
             td {
                   @apply text-center;
+            }
+
+            tbody {
+                  tr {
+                        @apply hover:bg-gray-500/30;
+                  }
             }
       }
 }

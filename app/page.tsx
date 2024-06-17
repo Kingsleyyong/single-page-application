@@ -5,14 +5,15 @@ import { TableComponent } from './component/table/page'
 import { useAppDispatch, useAppSelector } from './state'
 import { fetchProjects } from './state/post/postSlice'
 import {
-      generateTableData,
       reinitializeHeader,
-} from './state/table/tablesSlice'
+      generateTableBodyData,
+      toggleActionEvent,
+} from './state/table/tableSlice'
+import { TableAction } from './component/table/types'
 
 const Home = () => {
       const dispatch = useAppDispatch()
       const posts = useAppSelector((state) => state.posts)
-      const tableHeaders = useAppSelector((state) => state.tableHeader)
       const tableData = useAppSelector((state) => state.tableData)
 
       useEffect(() => {
@@ -24,8 +25,10 @@ const Home = () => {
       }, [dispatch, posts])
 
       useEffect(() => {
-            dispatch(generateTableData({ posts, headers: tableHeaders }))
-      }, [dispatch, posts, tableHeaders])
+            dispatch(
+                  generateTableBodyData({ posts, headers: tableData.header })
+            )
+      }, [dispatch, posts, tableData.header])
 
       return (
             <div className={'flex min-h-screen flex-col'}>
@@ -39,8 +42,24 @@ const Home = () => {
 
                   <section className={'grow p-4'}>
                         <TableComponent
-                              tableHeaders={tableHeaders}
-                              tableData={tableData}
+                              tableHeaders={tableData.header}
+                              tableData={tableData.bodyData}
+                              onEditButtonClick={(rowIndex: number) =>
+                                    dispatch(
+                                          toggleActionEvent({
+                                                rowIndex: rowIndex,
+                                                rowAction: TableAction.EDIT,
+                                          })
+                                    )
+                              }
+                              onDeleteButtonClick={(rowIndex: number) =>
+                                    dispatch(
+                                          toggleActionEvent({
+                                                rowIndex: rowIndex,
+                                                rowAction: TableAction.DELETE,
+                                          })
+                                    )
+                              }
                         />
                   </section>
             </div>

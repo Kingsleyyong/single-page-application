@@ -4,6 +4,11 @@ export enum TableActionEnum {
       IS_ACTIVE = 'IS_ACTIVE',
 }
 
+export enum TableAction {
+      EDIT = 'EDIT',
+      DELETE = 'DELETE',
+}
+
 export type TableRowDataType = {
       rowDatas: string[]
       edit: TableActionEnum
