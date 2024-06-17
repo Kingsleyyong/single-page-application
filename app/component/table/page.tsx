@@ -1,4 +1,3 @@
-import React, { Fragment } from 'react'
 import { TableActionEnum, TableRowDataType } from './types'
 
 interface ITableComponentProps {

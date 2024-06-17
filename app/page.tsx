@@ -13,21 +13,7 @@ const Home = () => {
                   <hr className={'mt-2'} />
 
                   <section className={'grow p-4'}>
-                        <TableComponent
-                              tableHeaders={['1', '2', '3', '']}
-                              tableData={[
-                                    {
-                                          rowDatas: ['1', '2', '3'],
-                                          edit: TableActionEnum.AVAILABLE,
-                                          delete: TableActionEnum.AVAILABLE,
-                                    },
-                                    {
-                                          rowDatas: ['1', '2', '3'],
-                                          edit: TableActionEnum.NOT_AVAILABLE,
-                                          delete: TableActionEnum.AVAILABLE,
-                                    },
-                              ]}
-                        />
+                        <TableComponent tableHeaders={[]} tableData={[]} />
                   </section>
             </div>
       )
