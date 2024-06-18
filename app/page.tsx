@@ -30,6 +30,11 @@ const Home = () => {
             )
       }, [dispatch, posts, tableData.header])
 
+      const buttonClickHandler = (id: number, rowAction: TableAction) => {
+            const payload = { id, rowAction }
+            dispatch(toggleActionEvent(payload))
+      }
+
       return (
             <div className={'flex min-h-screen flex-col'}>
                   <section className={'flex grow-0 justify-between'}>
@@ -44,22 +49,7 @@ const Home = () => {
                         <TableComponent
                               tableHeaders={tableData.header}
                               tableData={tableData.bodyData}
-                              onEditButtonClick={(rowIndex: number) =>
-                                    dispatch(
-                                          toggleActionEvent({
-                                                rowIndex: rowIndex,
-                                                rowAction: TableAction.EDIT,
-                                          })
-                                    )
-                              }
-                              onDeleteButtonClick={(rowIndex: number) =>
-                                    dispatch(
-                                          toggleActionEvent({
-                                                rowIndex: rowIndex,
-                                                rowAction: TableAction.DELETE,
-                                          })
-                                    )
-                              }
+                              onButtonClick={buttonClickHandler}
                         />
                   </section>
             </div>

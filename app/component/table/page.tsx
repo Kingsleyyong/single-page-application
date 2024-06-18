@@ -1,18 +1,17 @@
-import { useEffect } from 'react'
-import { TableActionEnum, TableRowDataType } from './types'
+import { Fragment, useEffect } from 'react'
+import { TableAction, TableActionEnum, TableRowDataType } from './types'
+import { isString } from 'util'
 
 interface ITableComponentProps {
       tableHeaders: string[]
       tableData: TableRowDataType[]
-      onEditButtonClick: (rowIndex: number) => void
-      onDeleteButtonClick: (rowIndex: number) => void
+      onButtonClick: (id: number, action: TableAction) => void
 }
 
 export const TableComponent = ({
       tableHeaders,
       tableData,
-      onEditButtonClick,
-      onDeleteButtonClick,
+      onButtonClick,
 }: ITableComponentProps) => {
       useEffect(() => {
             console.log(tableHeaders, tableData)
@@ -40,44 +39,64 @@ export const TableComponent = ({
                   </thead>
 
                   <tbody>
-                        {tableData.map((rowDatas, rowIndex) => (
+                        {tableData.map((row, rowIndex) => (
                               <tr key={`DataRow ${rowIndex}`}>
-                                    {rowDatas.rowDatas.map(
-                                          (data, cellIndex) => (
-                                                <td
-                                                      key={`CellData ${cellIndex}. ${data}`}
-                                                      className={
-                                                            Number.isNaN(
-                                                                  parseInt(
-                                                                        data,
-                                                                        10
-                                                                  )
-                                                            )
-                                                                  ? 'max-w-48'
-                                                                  : 'max-w-40'
-                                                      }
-                                                >
-                                                      <span
+                                    {Object.keys(row).map((key, keyIndex) => {
+                                          const cellData =
+                                                row[
+                                                      tableHeaders[
+                                                            keyIndex
+                                                      ] as keyof typeof row
+                                                ]
+
+                                          return (
+                                                !Object.keys(
+                                                      TableAction
+                                                ).includes(
+                                                      key.toUpperCase()
+                                                ) && (
+                                                      <td
+                                                            key={`Row ${rowIndex}, ${key}`}
                                                             className={
-                                                                  'pointer-events-none select-none normal-case'
+                                                                  typeof cellData ===
+                                                                        'string' &&
+                                                                  Number.isNaN(
+                                                                        parseInt(
+                                                                              cellData,
+                                                                              10
+                                                                        )
+                                                                  )
+                                                                        ? 'max-w-48'
+                                                                        : 'max-w-40'
                                                             }
                                                       >
-                                                            {data}
-                                                      </span>
-                                                </td>
+                                                            <span
+                                                                  className={
+                                                                        'pointer-events-none select-none normal-case'
+                                                                  }
+                                                            >
+                                                                  {cellData}
+                                                            </span>
+                                                      </td>
+                                                )
                                           )
-                                    )}
+                                    })}
+                                    {/* make sure change on posts state, not table header or body state */}
                                     <td>
-                                          {rowDatas.edit} | {rowDatas.delete}
+                                          {row.edit} | {row.delete}
                                     </td>
 
-                                    <td className={'max-w-20'}>
-                                          {rowDatas.edit !==
+                                    <td
+                                          key={`Row ${rowIndex} action button`}
+                                          className={'max-w-20'}
+                                    >
+                                          {row.edit !==
                                                 TableActionEnum.NOT_AVAILABLE && (
                                                 <button
                                                       onClick={() =>
-                                                            onEditButtonClick(
-                                                                  rowIndex
+                                                            onButtonClick(
+                                                                  row.id,
+                                                                  TableAction.EDIT
                                                             )
                                                       }
                                                       className={'select-none'}
@@ -86,12 +105,13 @@ export const TableComponent = ({
                                                 </button>
                                           )}
 
-                                          {rowDatas.delete !==
+                                          {row.delete !==
                                                 TableActionEnum.NOT_AVAILABLE && (
                                                 <button
                                                       onClick={() =>
-                                                            onDeleteButtonClick(
-                                                                  rowIndex
+                                                            onButtonClick(
+                                                                  row.id,
+                                                                  TableAction.DELETE
                                                             )
                                                       }
                                                       className={'select-none'}

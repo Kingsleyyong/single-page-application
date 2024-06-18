@@ -42,19 +42,10 @@ const tableDataSlice = createSlice({
 
                   const bodyData = posts.reduce(
                         (accumulator: TableRowDataType[], currentPost) => {
-                              const rowDatasArray = [] as string[]
-                              action.payload.headers.map((string) => {
-                                    rowDatasArray.push(
-                                          currentPost[
-                                                string as keyof typeof currentPost
-                                          ].toString()
-                                    )
-                              })
-
                               return [
                                     ...accumulator,
                                     {
-                                          rowDatas: rowDatasArray,
+                                          ...currentPost,
                                           edit: TableActionEnum.AVAILABLE,
                                           delete: TableActionEnum.AVAILABLE,
                                     },
@@ -68,11 +59,13 @@ const tableDataSlice = createSlice({
             toggleActionEvent: (
                   state,
                   action: PayloadAction<{
-                        rowIndex: number
+                        id: number
                         rowAction: TableAction
                   }>
             ) => {
-                  const currentRow = state.bodyData.at(action.payload.rowIndex)
+                  const currentRow = state.bodyData.find(
+                        (data) => data.id === action.payload.id
+                  )
                   const currentStatus =
                         action.payload.rowAction === TableAction.EDIT
                               ? currentRow?.edit
@@ -83,17 +76,27 @@ const tableDataSlice = createSlice({
                   )
                         return
 
+                  const newBodyData = state.bodyData.reduce(
+                        (accumulator: TableRowDataType[], currentData) => {
+                              if (currentData.id === action.payload.id) {
+                                    accumulator.push({
+                                          ...currentData,
+                                          [action.payload.rowAction.toLowerCase()]:
+                                                currentStatus ===
+                                                TableActionEnum.AVAILABLE
+                                                      ? TableActionEnum.IS_ACTIVE
+                                                      : TableActionEnum.AVAILABLE,
+                                    })
+                              } else accumulator.push(currentData)
+
+                              return accumulator
+                        },
+                        []
+                  )
+
                   return {
                         ...state,
-                        bodyData: {
-                              ...state.bodyData,
-                              [action.payload.rowAction === TableAction.EDIT
-                                    ? 'edit'
-                                    : 'delete']:
-                                    currentStatus === TableActionEnum.AVAILABLE
-                                          ? TableActionEnum.IS_ACTIVE
-                                          : TableActionEnum.AVAILABLE,
-                        },
+                        bodyData: newBodyData,
                   }
             },
       },

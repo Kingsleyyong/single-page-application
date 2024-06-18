@@ -1,3 +1,5 @@
+import { PostsType } from '@/app/state/post/postSlice'
+
 export enum TableActionEnum {
       AVAILABLE = 'AVAILABLE',
       NOT_AVAILABLE = 'NOT_AVAILABLE',
@@ -9,8 +11,7 @@ export enum TableAction {
       DELETE = 'DELETE',
 }
 
-export type TableRowDataType = {
-      rowDatas: string[]
+export interface TableRowDataType extends PostsType {
       edit: TableActionEnum
       delete: TableActionEnum
 }
