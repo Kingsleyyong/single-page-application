@@ -9,11 +9,21 @@ import {
 interface TableDataType {
       header: string[]
       bodyData: TableRowDataType[]
+      showDialog:
+            | {
+                    userId: TableRowDataType['userId']
+                    id: TableRowDataType['id']
+              }
+            | undefined
 }
 
 const tableDataSlice = createSlice({
       name: 'tableData',
-      initialState: { header: [], bodyData: [] } as TableDataType,
+      initialState: {
+            header: [],
+            bodyData: [],
+            showDialog: undefined,
+      } as TableDataType,
       reducers: {
             reinitializeHeader: (state, action: PayloadAction<PostsType[]>) => {
                   const posts = action.payload
@@ -97,11 +107,25 @@ const tableDataSlice = createSlice({
                   return {
                         ...state,
                         bodyData: newBodyData,
+                        showDialog: (() => {
+                              const currentData = newBodyData.find(
+                                    (data) => data.id === action.payload.id
+                              )
+                              if (currentData === undefined) return undefined
+
+                              const { userId, id } = currentData
+                              return { userId, id }
+                        })(),
                   }
             },
+            onDialogCancel: (state) => ({ ...state, showDialog: undefined }),
       },
 })
 
-export const { reinitializeHeader, generateTableBodyData, toggleActionEvent } =
-      tableDataSlice.actions
+export const {
+      reinitializeHeader,
+      generateTableBodyData,
+      toggleActionEvent,
+      onDialogCancel,
+} = tableDataSlice.actions
 export const { reducer: tableDataReducer } = tableDataSlice

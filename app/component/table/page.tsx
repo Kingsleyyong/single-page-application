@@ -1,22 +1,16 @@
-import { Fragment, useEffect } from 'react'
 import { TableAction, TableActionEnum, TableRowDataType } from './types'
-import { isString } from 'util'
 
 interface ITableComponentProps {
       tableHeaders: string[]
-      tableData: TableRowDataType[]
+      tableBodyData: TableRowDataType[]
       onButtonClick: (id: number, action: TableAction) => void
 }
 
 export const TableComponent = ({
       tableHeaders,
-      tableData,
+      tableBodyData,
       onButtonClick,
 }: ITableComponentProps) => {
-      useEffect(() => {
-            console.log(tableHeaders, tableData)
-      }, [tableData, tableHeaders])
-
       return (
             <table className={'size-full'}>
                   <thead>
@@ -39,7 +33,7 @@ export const TableComponent = ({
                   </thead>
 
                   <tbody>
-                        {tableData.map((row, rowIndex) => (
+                        {tableBodyData.map((row, rowIndex) => (
                               <tr key={`DataRow ${rowIndex}`}>
                                     {Object.keys(row).map((key, keyIndex) => {
                                           const cellData =
@@ -70,22 +64,21 @@ export const TableComponent = ({
                                                                         : 'max-w-40'
                                                             }
                                                       >
-                                                            <span
-                                                                  className={
-                                                                        'pointer-events-none select-none normal-case'
-                                                                  }
-                                                            >
-                                                                  {cellData}
-                                                            </span>
+                                                            {
+                                                                  <span
+                                                                        className={
+                                                                              'pointer-events-none select-none normal-case'
+                                                                        }
+                                                                  >
+                                                                        {
+                                                                              cellData
+                                                                        }
+                                                                  </span>
+                                                            }
                                                       </td>
                                                 )
                                           )
                                     })}
-                                    {/* make sure change on posts state, not table header or body state */}
-                                    <td>
-                                          {row.edit} | {row.delete}
-                                    </td>
-
                                     <td
                                           key={`Row ${rowIndex} action button`}
                                           className={'max-w-20'}
@@ -99,7 +92,6 @@ export const TableComponent = ({
                                                                   TableAction.EDIT
                                                             )
                                                       }
-                                                      className={'select-none'}
                                                 >
                                                       ✏️
                                                 </button>
@@ -114,7 +106,6 @@ export const TableComponent = ({
                                                                   TableAction.DELETE
                                                             )
                                                       }
-                                                      className={'select-none'}
                                                 >
                                                       🗑️
                                                 </button>

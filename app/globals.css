@@ -56,6 +56,12 @@ body {
       }
 }
 
+@layer components {
+      .dialogOpen {
+            @apply pointer-events-none select-none blur-sm;
+      }
+}
+
 @layer utilities {
       .text-balance {
             text-wrap: balance;
