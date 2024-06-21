@@ -6,7 +6,7 @@ interface ITableComponentProps {
       onButtonClick: (id: number, action: TableAction) => void
 }
 
-export const TableComponent = ({
+const TableComponent = ({
       tableHeaders,
       tableBodyData,
       onButtonClick,
@@ -117,3 +117,5 @@ export const TableComponent = ({
             </table>
       )
 }
+
+export default TableComponent

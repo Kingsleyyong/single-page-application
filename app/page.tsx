@@ -1,16 +1,19 @@
 'use client'
 
-import { Fragment, useEffect } from 'react'
-import { TableComponent } from './component/table/page'
-import { useAppDispatch, useAppSelector } from './state'
-import { fetchProjects } from './state/post/postSlice'
+import { Suspense, lazy, useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from './lib'
+import { getProjects } from './lib/post/postSlice'
 import {
       reinitializeHeader,
       generateTableBodyData,
       toggleActionEvent,
-} from './state/table/tableSlice'
+} from './lib/table/tableSlice'
 import { TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
+import Loading from './loading'
+
+// Lazy-load the TableComponent
+const TableComponent = lazy(() => import('./component/table/page'))
 
 const Home = () => {
       const dispatch = useAppDispatch()
@@ -18,7 +21,7 @@ const Home = () => {
       const tableData = useAppSelector((state) => state.tableData)
 
       useEffect(() => {
-            dispatch(fetchProjects(10))
+            dispatch(getProjects(10))
       }, [dispatch])
 
       useEffect(() => {
@@ -35,10 +38,6 @@ const Home = () => {
             const payload = { id, rowAction }
             dispatch(toggleActionEvent(payload))
       }
-
-      useEffect(() => {
-            console.log(tableData)
-      }, [tableData])
 
       return (
             <div
@@ -59,13 +58,15 @@ const Home = () => {
 
                         <hr className={'mt-2'} />
 
-                        <section className={'grow p-4'}>
-                              <TableComponent
-                                    tableHeaders={tableData.header}
-                                    tableBodyData={tableData.bodyData}
-                                    onButtonClick={buttonClickHandler}
-                              />
-                        </section>
+                        <Suspense fallback={<Loading />}>
+                              <section className={'grow p-4'}>
+                                    <TableComponent
+                                          tableHeaders={tableData.header}
+                                          tableBodyData={tableData.bodyData}
+                                          onButtonClick={buttonClickHandler}
+                                    />
+                              </section>
+                        </Suspense>
                   </div>
 
                   {tableData.showDialog !== undefined && <EditDialog />}

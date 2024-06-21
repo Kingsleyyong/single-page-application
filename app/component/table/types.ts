@@ -1,4 +1,4 @@
-import { PostsType } from '@/app/state/post/postSlice'
+import { PostsType } from '@/app/lib/post/postSlice'
 
 export enum TableActionEnum {
       AVAILABLE = 'AVAILABLE',

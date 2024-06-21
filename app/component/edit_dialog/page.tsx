@@ -1,8 +1,8 @@
-import { useAppDispatch, useAppSelector } from '@/app/state'
+import { useAppDispatch, useAppSelector } from '@/app/lib'
 import React, { FormEvent, Fragment, useRef } from 'react'
-import { TableAction } from '../table/types'
-import { PostsType } from '@/app/state/post/postSlice'
-import { onDialogCancel } from '@/app/state/table/tableSlice'
+import { TableAction, TableRowDataType } from '../table/types'
+import { PostsType, putProject } from '@/app/lib/post/postSlice'
+import { onDialogCancel } from '@/app/lib/table/tableSlice'
 
 const EditDialog = () => {
       const { showDialog, bodyData } = useAppSelector(
@@ -31,28 +31,30 @@ const EditDialog = () => {
                                     key.toUpperCase()
                               ) && !Object.keys(showDialog).includes(key)
                   )
-                  .reduce((accumulator, currKey) => {
-                        const element = textAreasRef.current[currKey]
+                  .reduce(
+                        (accumulator, currKey) => {
+                              const element = textAreasRef.current[currKey]
 
-                        if (element && 'value' in element) {
-                              const text = element.value
-                              return {
-                                    ...accumulator,
-                                    [currKey]: text,
+                              if (element && 'value' in element) {
+                                    const text = element.value
+                                    return {
+                                          ...accumulator,
+                                          [currKey]: text,
+                                    }
                               }
-                        }
 
-                        return accumulator
-                  }, {})
+                              return accumulator
+                        },
+                        {} as {
+                              title: TableRowDataType['title']
+                              body: TableRowDataType['body']
+                        }
+                  )
 
             if (currentRowData) {
-                  console.log([
-                        ...bodyData.map((data) =>
-                              data.id === currentRowData.id
-                                    ? { ...currentRowData, ...newInput }
-                                    : data
-                        ),
-                  ])
+                  const { id, userId } = currentRowData
+                  const post: PostsType = { userId, id, ...newInput }
+                  dispatch(putProject(post))
             } else console.log([...bodyData, { ...showDialog, ...newInput }])
       }
 
@@ -72,9 +74,7 @@ const EditDialog = () => {
                         onSubmit={onFormSubmit}
                         className={`grid min-h-max grid-cols-2 gap-5`}
                   >
-                        {Object.keys(
-                              currentRowData ?? bodyData[bodyData.length - 1]
-                        )
+                        {Object.keys(bodyData[bodyData.length - 1])
                               .filter(
                                     (key) =>
                                           !Object.keys(TableAction).includes(
