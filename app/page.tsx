@@ -2,7 +2,7 @@
 
 import { Suspense, lazy, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from './lib'
-import { getProjects } from './lib/post/postSlice'
+import { getPosts } from './lib/post/postSlice'
 import {
       reinitializeHeader,
       generateTableBodyData,
@@ -11,6 +11,7 @@ import {
 import { TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
 import Loading from './loading'
+import { DeleteDialog } from './component/delete_dialog/page'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
@@ -21,7 +22,7 @@ const Home = () => {
       const tableData = useAppSelector((state) => state.tableData)
 
       useEffect(() => {
-            dispatch(getProjects(10))
+            dispatch(getPosts(10))
       }, [dispatch])
 
       useEffect(() => {
@@ -69,7 +70,15 @@ const Home = () => {
                         </Suspense>
                   </div>
 
-                  {tableData.showDialog !== undefined && <EditDialog />}
+                  {tableData.showDialog !== undefined &&
+                        tableData.showDialog.action === TableAction.EDIT && (
+                              <EditDialog />
+                        )}
+
+                  {tableData.showDialog !== undefined &&
+                        tableData.showDialog.action === TableAction.DELETE && (
+                              <DeleteDialog />
+                        )}
             </div>
       )
 }

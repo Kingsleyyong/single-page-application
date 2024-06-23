@@ -11,6 +11,7 @@ interface TableDataType {
       bodyData: TableRowDataType[]
       showDialog:
             | {
+                    action: TableAction
                     userId: TableRowDataType['userId']
                     id: TableRowDataType['id']
               }
@@ -114,11 +115,18 @@ const tableDataSlice = createSlice({
                               if (currentData === undefined) return undefined
 
                               const { userId, id } = currentData
-                              return { userId, id }
+                              return {
+                                    userId,
+                                    id,
+                                    action: action.payload.rowAction,
+                              }
                         })(),
                   }
             },
-            onDialogCancel: (state) => ({ ...state, showDialog: undefined }),
+            onDialogCancel: (state) => {
+                  console.log('running close dialog')
+                  return { ...state, showDialog: undefined }
+            },
       },
 })
 

@@ -1,4 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { Playball } from 'next/font/google'
 
 export interface PostsType {
       id: number
@@ -7,8 +8,8 @@ export interface PostsType {
       body: string
 }
 
-export const getProjects = createAsyncThunk(
-      'posts/getProjects',
+export const getPosts = createAsyncThunk(
+      'posts/getPost',
       async (limit?: number) => {
             const response = await fetch(
                   `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts${limit ? `?_limit=${limit}` : ''}`
@@ -17,8 +18,8 @@ export const getProjects = createAsyncThunk(
       }
 )
 
-export const putProject = createAsyncThunk(
-      'post/editProject',
+export const putPost = createAsyncThunk(
+      'post/putProject',
       async (data: PostsType) => {
             const options = {
                   method: 'PUT',
@@ -36,6 +37,24 @@ export const putProject = createAsyncThunk(
       }
 )
 
+export const deletePost = createAsyncThunk(
+      'post/deletePost',
+      async ({ id }: PostsType) => {
+            const options = {
+                  method: 'DELETE',
+                  headers: {
+                        'Content-Type': 'application/json',
+                  },
+            }
+            const response = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts/${id}`,
+                  options
+            )
+
+            return id
+      }
+)
+
 const postsSlice = createSlice({
       name: 'posts',
       initialState: [] as PostsType[],
@@ -43,7 +62,7 @@ const postsSlice = createSlice({
       extraReducers: (builder) => {
             builder
                   .addCase(
-                        getProjects.fulfilled,
+                        getPosts.fulfilled,
                         (state, action: PayloadAction<PostsType[]>) => {
                               const newPostsData = action.payload.reduce(
                                     (accumulator: PostsType[], currentPost) => {
@@ -62,12 +81,20 @@ const postsSlice = createSlice({
                         }
                   )
                   .addCase(
-                        putProject.fulfilled,
+                        putPost.fulfilled,
                         (state, action: PayloadAction<PostsType>) => [
                               ...state.map((data) =>
                                     data.id === action.payload.id
                                           ? action.payload
                                           : data
+                              ),
+                        ]
+                  )
+                  .addCase(
+                        deletePost.fulfilled,
+                        (state, action: PayloadAction<PostsType['id']>) => [
+                              ...state.filter(
+                                    (data) => data.id !== action.payload
                               ),
                         ]
                   )

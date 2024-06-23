@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
 import React, { FormEvent, Fragment, useRef } from 'react'
 import { TableAction, TableRowDataType } from '../table/types'
-import { PostsType, putProject } from '@/app/lib/post/postSlice'
+import { PostsType, putPost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
 
 const EditDialog = () => {
@@ -54,7 +54,7 @@ const EditDialog = () => {
             if (currentRowData) {
                   const { id, userId } = currentRowData
                   const post: PostsType = { userId, id, ...newInput }
-                  dispatch(putProject(post))
+                  dispatch(putPost(post)).then(() => dispatch(onDialogCancel()))
             } else console.log([...bodyData, { ...showDialog, ...newInput }])
       }
 
