@@ -1,11 +1,14 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
-import { isSuccess } from '@/app/lib/loading/loadingSlice'
+import { Status, isSuccess } from '@/app/lib/loading/loadingSlice'
 import { deletePost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
+import Loading from '@/app/loading'
 
 export const DeleteDialog = () => {
       const posts = useAppSelector((state) => state.posts)
       const { showDialog } = useAppSelector((state) => state.tableData)
+      const loading = useAppSelector((state) => state.loadingStatus)
+
       const dispatch = useAppDispatch()
 
       const onDeleteConfirmation = () => {
@@ -38,10 +41,15 @@ export const DeleteDialog = () => {
                               Cancel
                         </button>
                         <button
+                              disabled={loading.status === Status.LOADING}
                               className={'m-1'}
                               onClick={onDeleteConfirmation}
                         >
-                              Confirm
+                              {loading.status === Status.LOADING ? (
+                                    <Loading className={'h-6 w-6'} />
+                              ) : (
+                                    'Confirm'
+                              )}
                         </button>
                   </div>
             </div>

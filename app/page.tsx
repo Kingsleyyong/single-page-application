@@ -13,7 +13,7 @@ import { TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
 import Loading from './loading'
 import { DeleteDialog } from './component/delete_dialog/page'
-import { isSuccess } from './lib/loading/loadingSlice'
+import { Status, isSuccess } from './lib/loading/loadingSlice'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
@@ -71,15 +71,13 @@ const Home = () => {
 
                         <hr className={'mt-2'} />
 
-                        <Suspense fallback={<Loading />}>
-                              <section className={'grow p-4'}>
-                                    <TableComponent
-                                          tableHeaders={tableData.header}
-                                          tableBodyData={tableData.bodyData}
-                                          onButtonClick={buttonClickHandler}
-                                    />
-                              </section>
-                        </Suspense>
+                        <section className={'grow p-4'}>
+                              <TableComponent
+                                    tableHeaders={tableData.header}
+                                    tableBodyData={tableData.bodyData}
+                                    onButtonClick={buttonClickHandler}
+                              />
+                        </section>
                   </div>
 
                   {tableData.showDialog !== undefined &&

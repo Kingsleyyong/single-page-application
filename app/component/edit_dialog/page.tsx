@@ -3,12 +3,19 @@ import React, { FormEvent, Fragment, useRef } from 'react'
 import { TableAction, TableRowDataType } from '../table/types'
 import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
 import { onDialogCancel, toggleNewEntry } from '@/app/lib/table/tableSlice'
-import { errorCatching, isSuccess } from '@/app/lib/loading/loadingSlice'
+import {
+      Status,
+      errorCatching,
+      isSuccess,
+} from '@/app/lib/loading/loadingSlice'
+import Loading from '@/app/loading'
 
 const EditDialog = () => {
       const { showDialog, bodyData } = useAppSelector(
             (state) => state.tableData
       )
+      const loading = useAppSelector((state) => state.loadingStatus)
+
       const dispatch = useAppDispatch()
 
       const textAreasRef = useRef<{
@@ -84,6 +91,10 @@ const EditDialog = () => {
                                     </span>
 
                                     <input
+                                          disabled={
+                                                loading.status ===
+                                                Status.LOADING
+                                          }
                                           ref={(node) => {
                                                 if (node) {
                                                       textAreasRef.current[
@@ -151,6 +162,10 @@ const EditDialog = () => {
                                                             {key}:
                                                       </span>
                                                       <textarea
+                                                            disabled={
+                                                                  loading.status ===
+                                                                  Status.LOADING
+                                                            }
                                                             ref={(node) => {
                                                                   if (node) {
                                                                         textAreasRef.current[
@@ -181,8 +196,15 @@ const EditDialog = () => {
                         >
                               Cancel
                         </button>
-                        <button type="submit" className={'bg-gray-800'}>
-                              Submit
+                        <button
+                              type="submit"
+                              className={'flex justify-center bg-gray-800'}
+                        >
+                              {loading.status === Status.LOADING ? (
+                                    <Loading className={'h-6 w-6'} />
+                              ) : (
+                                    'Submit'
+                              )}
                         </button>
                   </form>
             </div>
