@@ -9,6 +9,7 @@ export enum TableActionEnum {
 export enum TableAction {
       EDIT = 'EDIT',
       DELETE = 'DELETE',
+      NEW_ENTRY = 'NEW_ENTRY',
 }
 
 export interface TableRowDataType extends PostsType {

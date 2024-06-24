@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
 import React, { FormEvent, Fragment, useRef } from 'react'
 import { TableAction, TableRowDataType } from '../table/types'
-import { PostsType, putPost } from '@/app/lib/post/postSlice'
-import { onDialogCancel } from '@/app/lib/table/tableSlice'
+import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
+import { onDialogCancel, toggleNewEntry } from '@/app/lib/table/tableSlice'
 
 const EditDialog = () => {
       const { showDialog, bodyData } = useAppSelector(
@@ -11,7 +11,7 @@ const EditDialog = () => {
       const dispatch = useAppDispatch()
 
       const textAreasRef = useRef<{
-            [key in PostsType['title'] | PostsType['body']]: HTMLTextAreaElement
+            [key in string]: HTMLTextAreaElement | HTMLInputElement
       }>({})
 
       const currentRowData = bodyData.find(
@@ -24,38 +24,35 @@ const EditDialog = () => {
             event.preventDefault()
             if (showDialog === undefined) return
 
-            const newInput = Object.keys(textAreasRef.current)
-                  .filter(
-                        (key) =>
-                              !Object.keys(TableAction).includes(
-                                    key.toUpperCase()
-                              ) && !Object.keys(showDialog).includes(key)
-                  )
-                  .reduce(
-                        (accumulator, currKey) => {
-                              const element = textAreasRef.current[currKey]
+            const newInput = Object.keys(textAreasRef.current).reduce(
+                  (accumulator, currKey) => {
+                        const element = textAreasRef.current[currKey]
 
-                              if (element && 'value' in element) {
-                                    const text = element.value
-                                    return {
-                                          ...accumulator,
-                                          [currKey]: text,
-                                    }
+                        if (element && 'value' in element) {
+                              const text = element.value
+                              return {
+                                    ...accumulator,
+                                    [currKey]:
+                                          currKey === 'userId'
+                                                ? parseInt(text)
+                                                : text,
                               }
-
-                              return accumulator
-                        },
-                        {} as {
-                              title: TableRowDataType['title']
-                              body: TableRowDataType['body']
                         }
-                  )
 
-            if (currentRowData) {
+                        return accumulator
+                  },
+                  {} as PostsType
+            )
+
+            if (currentRowData && showDialog.action === TableAction.EDIT) {
                   const { id, userId } = currentRowData
-                  const post: PostsType = { userId, id, ...newInput }
+                  const post: PostsType = { ...newInput, userId, id }
                   dispatch(putPost(post)).then(() => dispatch(onDialogCancel()))
-            } else console.log([...bodyData, { ...showDialog, ...newInput }])
+            } else {
+                  dispatch(postPost(newInput)).then(() =>
+                        dispatch(onDialogCancel())
+                  )
+            }
       }
 
       if (showDialog === undefined) return null
@@ -74,7 +71,37 @@ const EditDialog = () => {
                         onSubmit={onFormSubmit}
                         className={`grid min-h-max grid-cols-2 gap-5`}
                   >
-                        {Object.keys(bodyData[bodyData.length - 1])
+                        {showDialog.action === TableAction.NEW_ENTRY && (
+                              <label
+                                    className={
+                                          'col-span-2 flex items-center justify-around'
+                                    }
+                              >
+                                    <span
+                                          className={
+                                                'my-2 mr-2 grow-0 text-xl font-bold capitalize'
+                                          }
+                                    >
+                                          User ID:{' '}
+                                    </span>
+
+                                    <input
+                                          ref={(node) => {
+                                                if (node) {
+                                                      textAreasRef.current[
+                                                            'userId'
+                                                      ] = node
+                                                }
+                                          }}
+                                          type="number"
+                                          className={
+                                                'm-2 h-auto grow rounded-lg bg-gray-900/50 p-2'
+                                          }
+                                    />
+                              </label>
+                        )}
+
+                        {Object.keys(bodyData[bodyData.length - 1] ?? [])
                               .filter(
                                     (key) =>
                                           !Object.keys(TableAction).includes(
@@ -85,26 +112,30 @@ const EditDialog = () => {
                                     <Fragment key={key}>
                                           {Object.keys(showDialog).includes(
                                                 key
-                                          ) && (
-                                                <label
-                                                      className={'flex w-full'}
-                                                >
-                                                      <span
+                                          ) &&
+                                                showDialog.action !==
+                                                      TableAction.NEW_ENTRY && (
+                                                      <label
                                                             className={
-                                                                  'text-xl font-bold capitalize'
+                                                                  'flex w-full'
                                                             }
                                                       >
-                                                            {key.replace(
-                                                                  /([a-z0-9])([A-Z])/g,
-                                                                  '$1 $2'
-                                                            )}
-                                                            {': '}
-                                                            {showDialog[
-                                                                  key as keyof typeof showDialog
-                                                            ].toString()}
-                                                      </span>
-                                                </label>
-                                          )}
+                                                            <span
+                                                                  className={
+                                                                        'text-xl font-bold capitalize'
+                                                                  }
+                                                            >
+                                                                  {key.replace(
+                                                                        /([a-z0-9])([A-Z])/g,
+                                                                        '$1 $2'
+                                                                  )}
+                                                                  {': '}
+                                                                  {showDialog[
+                                                                        key as keyof typeof showDialog
+                                                                  ]!.toString()}
+                                                            </span>
+                                                      </label>
+                                                )}
 
                                           {!Object.keys(showDialog).includes(
                                                 key

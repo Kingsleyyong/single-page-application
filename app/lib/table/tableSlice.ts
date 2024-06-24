@@ -123,8 +123,15 @@ const tableDataSlice = createSlice({
                         })(),
                   }
             },
+            toggleNewEntry: (state) => ({
+                  ...state,
+                  showDialog: {
+                        id: -1,
+                        userId: -1,
+                        action: TableAction.NEW_ENTRY,
+                  },
+            }),
             onDialogCancel: (state) => {
-                  console.log('running close dialog')
                   return { ...state, showDialog: undefined }
             },
       },
@@ -135,5 +142,6 @@ export const {
       generateTableBodyData,
       toggleActionEvent,
       onDialogCancel,
+      toggleNewEntry,
 } = tableDataSlice.actions
 export const { reducer: tableDataReducer } = tableDataSlice

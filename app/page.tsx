@@ -7,6 +7,7 @@ import {
       reinitializeHeader,
       generateTableBodyData,
       toggleActionEvent,
+      toggleNewEntry,
 } from './lib/table/tableSlice'
 import { TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
@@ -40,6 +41,10 @@ const Home = () => {
             dispatch(toggleActionEvent(payload))
       }
 
+      const onNewEntryBtnClick = () => {
+            dispatch(toggleNewEntry())
+      }
+
       return (
             <div
                   className={
@@ -54,7 +59,12 @@ const Home = () => {
                         <section className={'flex grow-0 justify-between'}>
                               <h1 className={'p-3'}>Single Page Application</h1>
 
-                              <button className={'m-2'}>New Entry</button>
+                              <button
+                                    className={'m-2'}
+                                    onClick={onNewEntryBtnClick}
+                              >
+                                    New Entry
+                              </button>
                         </section>
 
                         <hr className={'mt-2'} />
@@ -71,7 +81,7 @@ const Home = () => {
                   </div>
 
                   {tableData.showDialog !== undefined &&
-                        tableData.showDialog.action === TableAction.EDIT && (
+                        tableData.showDialog.action !== TableAction.DELETE && (
                               <EditDialog />
                         )}
 

@@ -1,5 +1,4 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Playball } from 'next/font/google'
 
 export interface PostsType {
       id: number
@@ -8,6 +7,8 @@ export interface PostsType {
       body: string
 }
 
+type PostTypeKeys = 'id' | 'userId' | 'title' | 'body'
+
 export const getPosts = createAsyncThunk(
       'posts/getPost',
       async (limit?: number) => {
@@ -15,6 +16,34 @@ export const getPosts = createAsyncThunk(
                   `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts${limit ? `?_limit=${limit}` : ''}`
             )
             return (await response.json()) as PostsType[]
+      }
+)
+
+export const postPost = createAsyncThunk(
+      'post/postPost',
+      async (bodyData: PostsType) => {
+            const options = {
+                  menthod: 'POST',
+                  headers: {
+                        'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(bodyData),
+            }
+            const response = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts`,
+                  options
+            )
+
+            const { userId, title, body } = bodyData
+            const id = (response.json() as Partial<PostsType>)['id']
+
+            if (
+                  id !== undefined &&
+                  userId !== undefined &&
+                  title !== undefined &&
+                  body !== undefined
+            )
+                  return { ...bodyData, id }
       }
 )
 
@@ -46,7 +75,7 @@ export const deletePost = createAsyncThunk(
                         'Content-Type': 'application/json',
                   },
             }
-            const response = await fetch(
+            await fetch(
                   `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts/${id}`,
                   options
             )
@@ -78,6 +107,12 @@ const postsSlice = createSlice({
                               )
 
                               return [...state, ...newPostsData]
+                        }
+                  )
+                  .addCase(
+                        postPost.fulfilled,
+                        (state, action: PayloadAction<PostsType>) => {
+                              return [action.payload, ...state]
                         }
                   )
                   .addCase(
