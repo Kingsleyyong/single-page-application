@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, lazy, useEffect } from 'react'
+import { lazy, useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from './lib'
 import { getPosts } from './lib/post/postSlice'
 import {
@@ -8,12 +8,12 @@ import {
       generateTableBodyData,
       toggleActionEvent,
       toggleNewEntry,
+      addingSlider,
+      subtractSlider,
 } from './lib/table/tableSlice'
-import { TableAction } from './component/table/types'
+import { LIMIT_PER_PAGE, TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
-import Loading from './loading'
 import { DeleteDialog } from './component/delete_dialog/page'
-import { Status, isSuccess } from './lib/loading/loadingSlice'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
@@ -22,21 +22,23 @@ const Home = () => {
       const dispatch = useAppDispatch()
       const posts = useAppSelector((state) => state.posts)
       const tableData = useAppSelector((state) => state.tableData)
-      const loadingData = useAppSelector((state) => state.loadingStatus)
+
+      const getPostCallback = useCallback(() => {
+            if (
+                  tableData.bodyData.length <
+                  LIMIT_PER_PAGE * tableData.sliderPage
+            )
+                  dispatch(getPosts(LIMIT_PER_PAGE * tableData.sliderPage))
+      }, [dispatch, tableData.bodyData.length, tableData.sliderPage])
 
       useEffect(() => {
-            dispatch(getPosts(10))
-      }, [dispatch])
+            getPostCallback()
+      }, [getPostCallback])
 
       useEffect(() => {
             dispatch(reinitializeHeader(posts))
+            dispatch(generateTableBodyData(posts))
       }, [dispatch, posts])
-
-      useEffect(() => {
-            dispatch(
-                  generateTableBodyData({ posts, headers: tableData.header })
-            )
-      }, [dispatch, posts, tableData.header])
 
       const buttonClickHandler = (id: number, rowAction: TableAction) => {
             const payload = { id, rowAction }
@@ -45,6 +47,17 @@ const Home = () => {
 
       const onNewEntryBtnClick = () => {
             dispatch(toggleNewEntry())
+      }
+
+      const nextPageClickHandler = () => {
+            if (!tableData.isEndPage) {
+                  dispatch(addingSlider())
+            }
+      }
+      const prevPageClickHandler = () => {
+            if (tableData.sliderPage !== 1) {
+                  dispatch(subtractSlider())
+            }
       }
 
       return (
@@ -76,6 +89,13 @@ const Home = () => {
                                     tableHeaders={tableData.header}
                                     tableBodyData={tableData.bodyData}
                                     onButtonClick={buttonClickHandler}
+                                    startIndex={
+                                          (tableData.sliderPage - 1) *
+                                          LIMIT_PER_PAGE
+                                    }
+                                    endIndex={
+                                          tableData.sliderPage * LIMIT_PER_PAGE
+                                    }
                               />
                         </section>
                   </div>
@@ -89,6 +109,23 @@ const Home = () => {
                         tableData.showDialog.action === TableAction.DELETE && (
                               <DeleteDialog />
                         )}
+
+                  <div
+                        className={
+                              'absolute right-4 top-full flex items-center justify-center space-x-2'
+                        }
+                  >
+                        {tableData.sliderPage !== 1 && (
+                              <button onClick={prevPageClickHandler}>
+                                    {'<'}
+                              </button>
+                        )}
+                        {!tableData.isEndPage && (
+                              <button onClick={nextPageClickHandler}>
+                                    {'>'}
+                              </button>
+                        )}
+                  </div>
             </div>
       )
 }

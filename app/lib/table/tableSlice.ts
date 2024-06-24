@@ -17,6 +17,8 @@ interface TableDataType {
                     id: TableRowDataType['id']
               }
             | undefined
+      sliderPage: number
+      isEndPage: boolean
 }
 
 const tableDataSlice = createSlice({
@@ -25,6 +27,8 @@ const tableDataSlice = createSlice({
             header: [],
             bodyData: [],
             showDialog: undefined,
+            sliderPage: 1,
+            isEndPage: false,
       } as TableDataType,
       reducers: {
             reinitializeHeader: (state, action: PayloadAction<PostsType[]>) => {
@@ -48,12 +52,9 @@ const tableDataSlice = createSlice({
             },
             generateTableBodyData: (
                   state,
-                  action: PayloadAction<{
-                        posts: PostsType[]
-                        headers: string[]
-                  }>
+                  action: PayloadAction<PostsType[]>
             ) => {
-                  const posts = action.payload.posts
+                  const posts = action.payload
 
                   const bodyData = posts.reduce(
                         (accumulator: TableRowDataType[], currentPost) => {
@@ -138,6 +139,15 @@ const tableDataSlice = createSlice({
             onDialogCancel: (state) => {
                   return { ...state, showDialog: undefined }
             },
+            isLastPage: (state) => ({ ...state, isEndPage: true }),
+            addingSlider: (state) => ({
+                  ...state,
+                  sliderPage: state.sliderPage + 1,
+            }),
+            subtractSlider: (state) => ({
+                  ...state,
+                  sliderPage: state.sliderPage - 1,
+            }),
       },
 })
 
@@ -147,5 +157,8 @@ export const {
       toggleActionEvent,
       onDialogCancel,
       toggleNewEntry,
+      isLastPage,
+      addingSlider,
+      subtractSlider,
 } = tableDataSlice.actions
 export const { reducer: tableDataReducer } = tableDataSlice

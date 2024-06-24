@@ -16,3 +16,5 @@ export interface TableRowDataType extends PostsType {
       edit: TableActionEnum
       delete: TableActionEnum
 }
+
+export const LIMIT_PER_PAGE = 10

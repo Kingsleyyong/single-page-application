@@ -5,7 +5,9 @@ import {
       isLoading,
       isSuccess,
 } from '../loading/loadingSlice'
-import { onDialogCancel } from '../table/tableSlice'
+import { isLastPage, onDialogCancel } from '../table/tableSlice'
+import { RootState } from '../store'
+import { LIMIT_PER_PAGE } from '@/app/component/table/types'
 export interface PostsType {
       id: number
       userId: number
@@ -34,6 +36,15 @@ export const getPosts = createAsyncThunk(
                         errorCatching(`HTTP Status ${response.status}`)
                   )
             } else {
+                  const state = thunkAPI.getState()
+                  const contentLength = parseInt(
+                        response.headers.get('X-Total-Count') ?? '0'
+                  )
+                  const sliderPage = (state as RootState).tableData.sliderPage
+
+                  if (sliderPage * LIMIT_PER_PAGE >= contentLength)
+                        thunkAPI.dispatch(isLastPage())
+
                   thunkAPI.dispatch(isSuccess())
                   return (await response.json()) as PostsType[]
             }
