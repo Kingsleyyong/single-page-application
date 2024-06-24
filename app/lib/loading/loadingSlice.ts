@@ -37,8 +37,10 @@ const loadingSlice = createSlice({
                                 status: Status.SUCCESS,
                           }
                         : state,
+            removeStatus: () => ({}) as LoadingStateType,
       },
 })
 
-export const { isLoading, errorCatching, isSuccess } = loadingSlice.actions
+export const { isLoading, errorCatching, isSuccess, removeStatus } =
+      loadingSlice.actions
 export const { reducer: loadingReducer } = loadingSlice

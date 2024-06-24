@@ -1,13 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
 import React, { FormEvent, Fragment, useRef } from 'react'
-import { TableAction, TableRowDataType } from '../table/types'
+import { TableAction } from '../table/types'
 import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
-import { onDialogCancel, toggleNewEntry } from '@/app/lib/table/tableSlice'
-import {
-      Status,
-      errorCatching,
-      isSuccess,
-} from '@/app/lib/loading/loadingSlice'
+import { onDialogCancel } from '@/app/lib/table/tableSlice'
+import { Status, isSuccess, removeStatus } from '@/app/lib/loading/loadingSlice'
 import Loading from '@/app/loading'
 
 const EditDialog = () => {
@@ -192,7 +188,11 @@ const EditDialog = () => {
                         <button
                               type="button"
                               className={'bg-gray-800'}
-                              onClick={() => dispatch(onDialogCancel())}
+                              onClick={() => {
+                                    if (loading.status === Status.ERROR)
+                                          dispatch(removeStatus())
+                                    dispatch(onDialogCancel())
+                              }}
                         >
                               Cancel
                         </button>
@@ -207,6 +207,16 @@ const EditDialog = () => {
                               )}
                         </button>
                   </form>
+
+                  {loading.status === Status.ERROR && (
+                        <div
+                              className={
+                                    'absolute left-0 top-[97%] flex h-10 w-full items-center justify-center rounded-b-xl bg-red-500 px-3'
+                              }
+                        >
+                              <span>Error: {loading.errorMessage}</span>
+                        </div>
+                  )}
             </div>
       )
 }
