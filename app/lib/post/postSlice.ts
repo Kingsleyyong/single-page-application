@@ -1,5 +1,11 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
+import {
+      LoadingType,
+      errorCatching,
+      isLoading,
+      isSuccess,
+} from '../loading/loadingSlice'
+import { onDialogCancel } from '../table/tableSlice'
 export interface PostsType {
       id: number
       userId: number
@@ -7,24 +13,42 @@ export interface PostsType {
       body: string
 }
 
-type PostTypeKeys = 'id' | 'userId' | 'title' | 'body'
+export enum PostTypeKeys {
+      id = 'id',
+      userId = 'userId',
+      title = 'title',
+      body = 'body',
+}
 
 export const getPosts = createAsyncThunk(
       'posts/getPost',
-      async (limit?: number) => {
+      async (limit: number, thunkAPI) => {
+            thunkAPI.dispatch(isLoading(LoadingType.DATA_FETCH))
+
             const response = await fetch(
-                  `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts${limit ? `?_limit=${limit}` : ''}`
+                  `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts?_limit=${limit}`
             )
-            return (await response.json()) as PostsType[]
+
+            if (!response.ok) {
+                  thunkAPI.dispatch(
+                        errorCatching(`HTTP Status ${response.status}`)
+                  )
+            } else {
+                  thunkAPI.dispatch(isSuccess())
+                  return (await response.json()) as PostsType[]
+            }
       }
 )
 
 export const postPost = createAsyncThunk(
       'post/postPost',
-      async (bodyData: PostsType) => {
+      async (bodyData: PostsType, thunkAPI) => {
+            thunkAPI.dispatch(isLoading(LoadingType.DATA_FETCH))
+
             const options = {
-                  menthod: 'POST',
+                  method: 'POST',
                   headers: {
+                        Accept: 'application/json',
                         'Content-Type': 'application/json',
                   },
                   body: JSON.stringify(bodyData),
@@ -34,22 +58,29 @@ export const postPost = createAsyncThunk(
                   options
             )
 
-            const { userId, title, body } = bodyData
-            const id = (response.json() as Partial<PostsType>)['id']
+            const responseData = await response.json()
 
-            if (
-                  id !== undefined &&
-                  userId !== undefined &&
-                  title !== undefined &&
-                  body !== undefined
-            )
-                  return { ...bodyData, id }
+            // Assuming responseData has the newly created post with an 'id'
+            const id = parseInt(responseData.id)
+
+            if (!response.ok) {
+                  thunkAPI.dispatch(
+                        errorCatching(`HTTP Status ${response.status}`)
+                  )
+            } else {
+                  thunkAPI.dispatch(isSuccess())
+                  thunkAPI.dispatch(onDialogCancel())
+
+                  return { ...bodyData, id } as PostsType
+            }
       }
 )
 
 export const putPost = createAsyncThunk(
       'post/putProject',
-      async (data: PostsType) => {
+      async (data: PostsType, thunkAPI) => {
+            thunkAPI.dispatch(isLoading(LoadingType.DATA_FETCH))
+
             const options = {
                   method: 'PUT',
                   headers: {
@@ -62,25 +93,45 @@ export const putPost = createAsyncThunk(
                   options
             )
 
-            return (await response.json()) as PostsType
+            if (!response.ok) {
+                  thunkAPI.dispatch(
+                        errorCatching(`HTTP Status ${response.status}`)
+                  )
+            } else {
+                  thunkAPI.dispatch(isSuccess())
+                  thunkAPI.dispatch(onDialogCancel())
+
+                  return (await response.json()) as PostsType
+            }
       }
 )
 
 export const deletePost = createAsyncThunk(
       'post/deletePost',
-      async ({ id }: PostsType) => {
+      async ({ id }: PostsType, thunkAPI) => {
+            thunkAPI.dispatch(isLoading(LoadingType.DATA_FETCH))
+
             const options = {
                   method: 'DELETE',
                   headers: {
                         'Content-Type': 'application/json',
                   },
             }
-            await fetch(
+            const response = await fetch(
                   `${process.env.NEXT_PUBLIC_API_ENDPOINT}/posts/${id}`,
                   options
             )
 
-            return id
+            if (!response.ok) {
+                  thunkAPI.dispatch(
+                        errorCatching(`HTTP Status ${response.status}`)
+                  )
+            } else {
+                  thunkAPI.dispatch(isSuccess())
+                  thunkAPI.dispatch(onDialogCancel())
+
+                  return id
+            }
       }
 )
 
@@ -92,7 +143,12 @@ const postsSlice = createSlice({
             builder
                   .addCase(
                         getPosts.fulfilled,
-                        (state, action: PayloadAction<PostsType[]>) => {
+                        (
+                              state,
+                              action: PayloadAction<PostsType[] | undefined>
+                        ) => {
+                              if (!action.payload) return state
+
                               const newPostsData = action.payload.reduce(
                                     (accumulator: PostsType[], currentPost) => {
                                           const foundData = state.find(
@@ -109,25 +165,35 @@ const postsSlice = createSlice({
                               return [...state, ...newPostsData]
                         }
                   )
+                  .addCase(postPost.fulfilled, (state, action) => {
+                        if (!action.payload) return state
+                        state.unshift(action.payload)
+
+                        return state
+                  })
                   .addCase(
-                        postPost.fulfilled,
-                        (state, action: PayloadAction<PostsType>) => {
-                              return [action.payload, ...state]
+                        putPost.fulfilled,
+                        (
+                              state,
+                              action: PayloadAction<PostsType | undefined>
+                        ) => {
+                              if (!action.payload) return state
+
+                              return [
+                                    ...state.map((data) =>
+                                          data.id === action.payload?.id
+                                                ? action.payload
+                                                : data
+                                    ),
+                              ]
                         }
                   )
                   .addCase(
-                        putPost.fulfilled,
-                        (state, action: PayloadAction<PostsType>) => [
-                              ...state.map((data) =>
-                                    data.id === action.payload.id
-                                          ? action.payload
-                                          : data
-                              ),
-                        ]
-                  )
-                  .addCase(
                         deletePost.fulfilled,
-                        (state, action: PayloadAction<PostsType['id']>) => [
+                        (
+                              state,
+                              action: PayloadAction<PostsType['id'] | undefined>
+                        ) => [
                               ...state.filter(
                                     (data) => data.id !== action.payload
                               ),

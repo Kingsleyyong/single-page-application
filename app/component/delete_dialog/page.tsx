@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
+import { isSuccess } from '@/app/lib/loading/loadingSlice'
 import { deletePost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
 
@@ -13,14 +14,9 @@ export const DeleteDialog = () => {
                         data.id === showDialog?.id &&
                         data.userId === showDialog.userId
             )
-            if (post === undefined) {
-                  console.error('No post found.')
-                  return
-            }
+            if (post === undefined) return
 
-            dispatch(deletePost(post)).then(() => {
-                  dispatch(onDialogCancel())
-            })
+            dispatch(deletePost(post))
       }
 
       return (

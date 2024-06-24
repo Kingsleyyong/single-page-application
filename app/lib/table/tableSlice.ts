@@ -1,10 +1,11 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { PostsType } from '../post/postSlice'
+import { PostTypeKeys, PostsType } from '../post/postSlice'
 import {
       TableAction,
       TableActionEnum,
       TableRowDataType,
 } from '@/app/component/table/types'
+import { sortByOrder } from '@/app/utils'
 
 interface TableDataType {
       header: string[]
@@ -35,7 +36,10 @@ const tableDataSlice = createSlice({
                                     (key) => !accumulator.includes(key)
                               )
 
-                              return [...accumulator, ...diff]
+                              return sortByOrder(Object.keys(PostTypeKeys), [
+                                    ...accumulator,
+                                    ...diff,
+                              ])
                         },
                         []
                   )

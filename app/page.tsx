@@ -13,6 +13,7 @@ import { TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
 import Loading from './loading'
 import { DeleteDialog } from './component/delete_dialog/page'
+import { isSuccess } from './lib/loading/loadingSlice'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
@@ -21,6 +22,7 @@ const Home = () => {
       const dispatch = useAppDispatch()
       const posts = useAppSelector((state) => state.posts)
       const tableData = useAppSelector((state) => state.tableData)
+      const loadingData = useAppSelector((state) => state.loadingStatus)
 
       useEffect(() => {
             dispatch(getPosts(10))

@@ -3,6 +3,7 @@ import React, { FormEvent, Fragment, useRef } from 'react'
 import { TableAction, TableRowDataType } from '../table/types'
 import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
 import { onDialogCancel, toggleNewEntry } from '@/app/lib/table/tableSlice'
+import { errorCatching, isSuccess } from '@/app/lib/loading/loadingSlice'
 
 const EditDialog = () => {
       const { showDialog, bodyData } = useAppSelector(
@@ -47,12 +48,9 @@ const EditDialog = () => {
             if (currentRowData && showDialog.action === TableAction.EDIT) {
                   const { id, userId } = currentRowData
                   const post: PostsType = { ...newInput, userId, id }
-                  dispatch(putPost(post)).then(() => dispatch(onDialogCancel()))
-            } else {
-                  dispatch(postPost(newInput)).then(() =>
-                        dispatch(onDialogCancel())
-                  )
-            }
+
+                  dispatch(putPost(post))
+            } else dispatch(postPost(newInput))
       }
 
       if (showDialog === undefined) return null
