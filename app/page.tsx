@@ -1,6 +1,6 @@
 'use client'
 
-import { lazy, useCallback, useEffect } from 'react'
+import { lazy, useCallback, useEffect, useState, Suspense } from 'react'
 import { useAppDispatch, useAppSelector } from './lib'
 import { getPosts } from './lib/post/postSlice'
 import {
@@ -14,11 +14,13 @@ import {
 import { LIMIT_PER_PAGE, TableAction } from './component/table/types'
 import EditDialog from './component/edit_dialog/page'
 import { DeleteDialog } from './component/delete_dialog/page'
+import Loading from './loading'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
 
 const Home = () => {
+      const [isLoadingTable, setisLoadingTable] = useState(false)
       const dispatch = useAppDispatch()
       const posts = useAppSelector((state) => state.posts)
       const tableData = useAppSelector((state) => state.tableData)
@@ -27,8 +29,10 @@ const Home = () => {
             if (
                   tableData.bodyData.length <
                   LIMIT_PER_PAGE * tableData.sliderPage
-            )
+            ) {
+                  setisLoadingTable(true)
                   dispatch(getPosts(LIMIT_PER_PAGE * tableData.sliderPage))
+            }
       }, [dispatch, tableData.bodyData.length, tableData.sliderPage])
 
       useEffect(() => {
@@ -38,6 +42,7 @@ const Home = () => {
       useEffect(() => {
             dispatch(reinitializeHeader(posts))
             dispatch(generateTableBodyData(posts))
+            setisLoadingTable(false)
       }, [dispatch, posts])
 
       const buttonClickHandler = (id: number, rowAction: TableAction) => {
@@ -67,11 +72,13 @@ const Home = () => {
                   }
             >
                   <div
-                        className={`h-full w-full ${
+                        className={`flex h-full w-full flex-col items-center justify-center ${
                               tableData.showDialog !== undefined && 'dialogOpen'
                         }`}
                   >
-                        <section className={'flex grow-0 justify-between'}>
+                        <section
+                              className={'flex w-full grow-0 justify-between'}
+                        >
                               <h1 className={'p-3'}>Single Page Application</h1>
 
                               <button
@@ -82,22 +89,36 @@ const Home = () => {
                               </button>
                         </section>
 
-                        <hr className={'mt-2'} />
+                        <hr className={'mt-2 w-full'} />
 
-                        <section className={'grow p-4'}>
-                              <TableComponent
-                                    tableHeaders={tableData.header}
-                                    tableBodyData={tableData.bodyData}
-                                    onButtonClick={buttonClickHandler}
-                                    startIndex={
-                                          (tableData.sliderPage - 1) *
-                                          LIMIT_PER_PAGE
-                                    }
-                                    endIndex={
-                                          tableData.sliderPage * LIMIT_PER_PAGE
-                                    }
-                              />
-                        </section>
+                        <Suspense
+                              fallback={<Loading className={'h-80 w-80'} />}
+                        >
+                              {isLoadingTable ? (
+                                    <Loading className={'m-10 h-80 w-80'} />
+                              ) : (
+                                    <section className={'w-full grow p-4'}>
+                                          <TableComponent
+                                                tableHeaders={tableData.header}
+                                                tableBodyData={
+                                                      tableData.bodyData
+                                                }
+                                                onButtonClick={
+                                                      buttonClickHandler
+                                                }
+                                                startIndex={
+                                                      (tableData.sliderPage -
+                                                            1) *
+                                                      LIMIT_PER_PAGE
+                                                }
+                                                endIndex={
+                                                      tableData.sliderPage *
+                                                      LIMIT_PER_PAGE
+                                                }
+                                          />
+                                    </section>
+                              )}
+                        </Suspense>
                   </div>
 
                   {tableData.showDialog !== undefined &&
