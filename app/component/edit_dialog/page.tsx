@@ -3,7 +3,7 @@ import React, { FormEvent, Fragment, useRef } from 'react'
 import { TableAction } from '../table/types'
 import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
-import { Status, isSuccess, removeStatus } from '@/app/lib/loading/loadingSlice'
+import { Status, removeStatus } from '@/app/lib/loading/loadingSlice'
 import Loading from '@/app/loading'
 
 const EditDialog = () => {

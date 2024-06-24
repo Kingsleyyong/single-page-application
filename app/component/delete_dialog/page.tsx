@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/app/lib'
-import { Status, isSuccess } from '@/app/lib/loading/loadingSlice'
+import { Status } from '@/app/lib/loading/loadingSlice'
 import { deletePost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
 import Loading from '@/app/loading'
