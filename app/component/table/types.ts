@@ -19,3 +19,11 @@ export interface TableRowDataType extends PostsType {
 }
 
 export const LIMIT_PER_PAGE = 10
+
+export interface TableComponentProps {
+      tableHeaders: string[]
+      tableBodyData: TableRowDataType[]
+      onButtonClick: (id: number, rowAction: TableAction) => void
+      startIndex: number
+      endIndex: number
+}

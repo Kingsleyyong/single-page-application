@@ -1,13 +1,5 @@
 // Types
-import { TableAction, TableActionEnum, TableRowDataType } from './types'
-
-interface ITableComponentProps {
-      tableHeaders: string[]
-      tableBodyData: TableRowDataType[]
-      onButtonClick: (id: number, action: TableAction) => void
-      startIndex: number
-      endIndex: number
-}
+import { TableComponentProps, TableAction, TableActionEnum } from './types'
 
 const TableComponent = ({
       tableHeaders,
@@ -15,7 +7,7 @@ const TableComponent = ({
       onButtonClick,
       startIndex,
       endIndex,
-}: ITableComponentProps) => {
+}: TableComponentProps) => {
       return (
             <table className={'size-full'}>
                   <thead>
@@ -100,12 +92,12 @@ const TableComponent = ({
                                                 {row.edit !==
                                                       TableActionEnum.NOT_AVAILABLE && (
                                                       <button
-                                                            onClick={() =>
+                                                            onClick={() => {
                                                                   onButtonClick(
                                                                         row.id,
                                                                         TableAction.EDIT
                                                                   )
-                                                            }
+                                                            }}
                                                       >
                                                             ✏️
                                                       </button>

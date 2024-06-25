@@ -19,12 +19,12 @@ import {
 import { LIMIT_PER_PAGE, TableAction } from './component/table/types'
 
 // Component
-import EditDialog from './component/edit_dialog/page'
-import DeleteDialog from './component/delete_dialog/page'
+import EditDialog from './component/edit_dialog/editDialog'
+import DeleteDialog from './component/delete_dialog/deleteDialog'
 import Loading from './loading'
 
 // Lazy-load the TableComponent
-const TableComponent = lazy(() => import('./component/table/page'))
+const TableComponent = lazy(() => import('./component/table/tableComponent'))
 
 const Home = () => {
       // For basic loading page
