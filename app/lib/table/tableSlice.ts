@@ -1,10 +1,15 @@
+// Redux
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+
+// Types
 import { PostTypeKeys, PostsType } from '../post/postSlice'
 import {
       TableAction,
       TableActionEnum,
       TableRowDataType,
 } from '@/app/component/table/types'
+
+// Utils
 import { sortByOrder } from '@/app/utils'
 
 interface TableDataType {
@@ -22,6 +27,7 @@ interface TableDataType {
       isEndPage: boolean
 }
 
+// TableDataSlice mainly use for table settings, such as pagination page, header and more
 const tableDataSlice = createSlice({
       name: 'tableData',
       initialState: {

@@ -1,16 +1,19 @@
+// Redux
 import { useAppDispatch, useAppSelector } from '@/app/lib'
 import { Status } from '@/app/lib/loading/loadingSlice'
 import { deletePost } from '@/app/lib/post/postSlice'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
+
+// Component
 import Loading from '@/app/loading'
 
-export const DeleteDialog = () => {
+const DeleteDialog = () => {
       const posts = useAppSelector((state) => state.posts)
       const { showDialog } = useAppSelector((state) => state.tableData)
       const loading = useAppSelector((state) => state.loadingStatus)
-
       const dispatch = useAppDispatch()
 
+      // Confirm Delete Button
       const onDeleteConfirmation = () => {
             const post = posts.find(
                   (data) =>
@@ -55,3 +58,5 @@ export const DeleteDialog = () => {
             </div>
       )
 }
+
+export default DeleteDialog

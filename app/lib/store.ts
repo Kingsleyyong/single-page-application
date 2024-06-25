@@ -1,3 +1,4 @@
+// Redux
 import { configureStore } from '@reduxjs/toolkit'
 import { postsReducer } from './post/postSlice'
 import { tableDataReducer } from './table/tableSlice'

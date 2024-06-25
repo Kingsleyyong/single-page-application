@@ -1,3 +1,4 @@
+// Redux
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export enum Status {
@@ -17,6 +18,8 @@ interface LoadingStateType {
       errorMessage?: string
 }
 
+// This loading slice mainly use for fetching data, showing fetching status
+// in UI and debug purpose
 const loadingSlice = createSlice({
       name: 'loading',
       initialState: {} as LoadingStateType,

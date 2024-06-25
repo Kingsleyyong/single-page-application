@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+// Types
 import { TableAction, TableActionEnum, TableRowDataType } from './types'
 
 interface ITableComponentProps {
@@ -39,6 +39,7 @@ const TableComponent = ({
 
                   <tbody>
                         {tableBodyData
+                              // Only show LIMIT_PER_PAGE amount of data
                               .filter(
                                     (_, index) =>
                                           index >= startIndex &&

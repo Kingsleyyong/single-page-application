@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Loading = ({ className }: { className: string }) => {
       return (
             <div

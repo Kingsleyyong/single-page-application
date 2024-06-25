@@ -1,9 +1,16 @@
-import { useAppDispatch, useAppSelector } from '@/app/lib'
+// React
 import React, { FormEvent, Fragment, useRef } from 'react'
-import { TableAction } from '../table/types'
-import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
+
+// Redux
+import { useAppDispatch, useAppSelector } from '@/app/lib'
 import { onDialogCancel } from '@/app/lib/table/tableSlice'
 import { Status, removeStatus } from '@/app/lib/loading/loadingSlice'
+
+// Types
+import { TableAction } from '../table/types'
+import { PostsType, postPost, putPost } from '@/app/lib/post/postSlice'
+
+// Component
 import Loading from '@/app/loading'
 
 const EditDialog = () => {
@@ -11,13 +18,14 @@ const EditDialog = () => {
             (state) => state.tableData
       )
       const loading = useAppSelector((state) => state.loadingStatus)
-
       const dispatch = useAppDispatch()
 
+      // Refs for textarea and input in the form
       const textAreasRef = useRef<{
             [key in string]: HTMLTextAreaElement | HTMLInputElement
       }>({})
 
+      // Get the current row table body data
       const currentRowData = bodyData.find(
             (data) =>
                   data.userId === showDialog?.userId &&

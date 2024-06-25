@@ -1,6 +1,9 @@
 'use client'
 
+// React
 import { lazy, useCallback, useEffect, useState, Suspense } from 'react'
+
+// Redux
 import { useAppDispatch, useAppSelector } from './lib'
 import { getPosts } from './lib/post/postSlice'
 import {
@@ -11,20 +14,27 @@ import {
       addingSlider,
       subtractSlider,
 } from './lib/table/tableSlice'
+
+// Types
 import { LIMIT_PER_PAGE, TableAction } from './component/table/types'
+
+// Component
 import EditDialog from './component/edit_dialog/page'
-import { DeleteDialog } from './component/delete_dialog/page'
+import DeleteDialog from './component/delete_dialog/page'
 import Loading from './loading'
 
 // Lazy-load the TableComponent
 const TableComponent = lazy(() => import('./component/table/page'))
 
 const Home = () => {
+      // For basic loading page
       const [isLoadingTable, setisLoadingTable] = useState(false)
+
       const dispatch = useAppDispatch()
       const posts = useAppSelector((state) => state.posts)
       const tableData = useAppSelector((state) => state.tableData)
 
+      // Callback function to prevent infinity fetching
       const getPostCallback = useCallback(() => {
             if (
                   tableData.bodyData.length <
@@ -39,6 +49,7 @@ const Home = () => {
             getPostCallback()
       }, [getPostCallback])
 
+      // When posts getting new changes
       useEffect(() => {
             dispatch(reinitializeHeader(posts))
             dispatch(generateTableBodyData(posts))

@@ -1,3 +1,4 @@
+// Redux
 import { PostsType } from '@/app/lib/post/postSlice'
 
 export enum TableActionEnum {

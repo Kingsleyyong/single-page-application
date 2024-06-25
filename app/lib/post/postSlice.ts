@@ -1,3 +1,4 @@
+// Redux
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
       LoadingType,
@@ -7,7 +8,10 @@ import {
 } from '../loading/loadingSlice'
 import { isLastPage, onDialogCancel } from '../table/tableSlice'
 import { RootState } from '../store'
+
+// Types
 import { LIMIT_PER_PAGE } from '@/app/component/table/types'
+
 export interface PostsType {
       id: number
       userId: number
@@ -22,6 +26,7 @@ export enum PostTypeKeys {
       body = 'body',
 }
 
+// API Fetching Async Funtions
 export const getPosts = createAsyncThunk(
       'posts/getPost',
       async (limit: number, thunkAPI) => {
@@ -150,6 +155,8 @@ export const deletePost = createAsyncThunk(
       }
 )
 
+// The postSlice mainly use for the storing the posts
+// This state prevent unnecessary fetching the same data
 const postsSlice = createSlice({
       name: 'posts',
       initialState: [] as PostsType[],
