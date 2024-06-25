@@ -1,3 +1,5 @@
+'use client'
+
 // React
 import React, { FormEvent, Fragment, useRef } from 'react'
 
