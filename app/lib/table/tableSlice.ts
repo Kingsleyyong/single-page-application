@@ -18,6 +18,7 @@ interface TableDataType {
               }
             | undefined
       sliderPage: number
+      totalPage: number
       isEndPage: boolean
 }
 
@@ -28,6 +29,7 @@ const tableDataSlice = createSlice({
             bodyData: [],
             showDialog: undefined,
             sliderPage: 1,
+            totalPage: 1,
             isEndPage: false,
       } as TableDataType,
       reducers: {
@@ -139,13 +141,21 @@ const tableDataSlice = createSlice({
             onDialogCancel: (state) => {
                   return { ...state, showDialog: undefined }
             },
-            isLastPage: (state) => ({ ...state, isEndPage: true }),
+            isLastPage: (state, action: PayloadAction<boolean>) => ({
+                  ...state,
+                  isEndPage: action.payload,
+            }),
             addingSlider: (state) => ({
                   ...state,
                   sliderPage: state.sliderPage + 1,
+                  totalPage:
+                        state.sliderPage + 1 > state.totalPage
+                              ? state.sliderPage + 1
+                              : state.totalPage,
             }),
             subtractSlider: (state) => ({
                   ...state,
+                  isEndPage: state.sliderPage - 1 === state.totalPage,
                   sliderPage: state.sliderPage - 1,
             }),
       },

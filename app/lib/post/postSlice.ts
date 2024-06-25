@@ -41,9 +41,13 @@ export const getPosts = createAsyncThunk(
                         response.headers.get('X-Total-Count') ?? '0'
                   )
                   const sliderPage = (state as RootState).tableData.sliderPage
+                  const totalPage = (state as RootState).tableData.totalPage
 
                   if (sliderPage * LIMIT_PER_PAGE >= contentLength)
-                        thunkAPI.dispatch(isLastPage())
+                        thunkAPI.dispatch(isLastPage(true))
+
+                  if (sliderPage < totalPage)
+                        thunkAPI.dispatch(isLastPage(false))
 
                   thunkAPI.dispatch(isSuccess())
                   return (await response.json()) as PostsType[]

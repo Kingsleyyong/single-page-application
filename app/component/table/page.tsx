@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { TableAction, TableActionEnum, TableRowDataType } from './types'
 
 interface ITableComponentProps {
@@ -41,7 +42,7 @@ const TableComponent = ({
                               .filter(
                                     (_, index) =>
                                           index >= startIndex &&
-                                          index <= endIndex
+                                          index < endIndex
                               )
                               .map((row, rowIndex) => (
                                     <tr key={`DataRow ${rowIndex}`}>
